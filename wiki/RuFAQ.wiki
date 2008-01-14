@@ -1,5 +1,3 @@
 #labels Documentation,Featured,Language-Russian
-#Flean - FAQ
-
 ===Во время работы Flean, возникают проблемы с двойным щёлчком в других программах===
 Попробуйте поменять значение параметра Interval в файле конфигурации.
