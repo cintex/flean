@@ -1,2 +1,3 @@
 0.06 -- 14.01.2008
+  * First public release
   * Now it's opensource!
