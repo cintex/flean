@@ -4,10 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ImgList, ExtCtrls, StdCtrls, IniFiles, CoolTrayIcon, Menus;
+  Dialogs, ImgList, ExtCtrls, StdCtrls, IniFiles, CoolTrayIcon, Menus, settings,
+  XPMan, TypInfo;
 
 type
-  TIndicator = class(TForm)
+  TfrIndicator = class(TForm)
     pic: TImage;
     Timer1: TTimer;
     TrayIcon: TCoolTrayIcon;
@@ -15,39 +16,73 @@ type
     MenuExit: TMenuItem;
     idl: TLabel;
     MenuAbout: TMenuItem;
+    XPManifest1: TXPManifest;
+    MenuSettings: TMenuItem;
+    imlMain: TImageList;
+    frOnOff: TMenuItem;
     procedure Timer1Timer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure MenuExitClick(Sender: TObject);
     procedure MenuAboutClick(Sender: TObject);
+    procedure Config1Click(Sender: TObject);
+    procedure MenuSettingsClick(Sender: TObject);
+    procedure frOnOffClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
   end;
+  procedure LoadLanguage(Section:string;Control:TWinControl);
 
 var
-  Indicator: TIndicator;
+  frIndicator: TfrIndicator;
 
 implementation
 
 {$R *.dfm}
 
 const app_name = 'Flean';
-    app_version = '0.06';
+    app_version = '0.07';
     app_manufacturer = 'Flean developers';
     app_years = '2007-2008';
     app_site = 'http://code.google.com/p/flean/';
 
 var
-  settings : TIniFile; // Configuration file
-  lang : integer; // Current layout's id
-  halign : byte;
-  valign : byte;
+  ConfigFile, LangFile : TIniFile; // Configuration file
+  lid : integer; // Current layout's id
+  HAlign : byte;
+  VAlign : byte;
 
-procedure TIndicator.Timer1Timer(Sender: TObject);
+procedure LoadLanguage(Section:string;Control:TWinControl);
+  procedure LoadLanguageFor(Section:string;Control:TControl);
+  var
+    Caption : string;
+    PropInfo : PPRopInfo;
+  begin
+    PropInfo := GetPropInfo(Control.ClassInfo,'Caption');
+    if PropInfo = nil then
+      PropInfo := GetPropInfo(Control.ClassInfo,'Text');
+    if PropInfo <> nil then begin
+      Caption := GetStrProp(Control,PropInfo);
+      Caption := LangFile.ReadString(Section,Control.Name,Caption);
+      SetStrProp(Control,PropInfo,Caption);
+    end;
+  end;
+var
+  i : integer;
+begin
+  LoadLanguageFor(Section,Control);
+  for i:=0 to Control.ControlCount-1 do
+    if Control.Controls[i] is TWinControl
+      then LoadLanguage(Section,TWinControl(Control.Controls[i]))
+      else LoadLanguageFor(Section,Control.Controls[i]);
+end;
+
+procedure TfrIndicator.Timer1Timer(Sender: TObject);
 var
   hWindow,hEdit : THandle;
-  newlang : integer;
+  newlid : integer;
   r : TRect;
   p : TPoint;
   oid, tid : DWORD;
@@ -84,44 +119,74 @@ begin
   if hEdit=null
     then hide;
   // Getting id of current layout
-  newlang := GetKeyboardLayout(oid) shr $10;
-  if newlang <> lang
+  newlid := GetKeyboardLayout(oid) shr $10;
+  if newlid <> lid
     then begin
-      lang := newlang;
-      pic.Picture.LoadFromFile(ExtractFilePath(application.ExeName)+settings.ReadString('flags',IntToStr(newlang),'flags\undef.bmp'));
-      idl.Caption := IntToStr(newlang);
+      lid := newlid;
+      pic.Picture.LoadFromFile(ExtractFilePath(application.ExeName)+ConfigFile.ReadString('flags',IntToStr(newlid),'flags\undef.bmp'));
+      idl.Caption := IntToStr(newlid);
     end;
 end;
 
-procedure TIndicator.FormCreate(Sender: TObject);
+procedure TfrIndicator.FormCreate(Sender: TObject);
 begin
   Hide;
   Caption := app_name;
   Application.Title := Caption;
+  frSettings.Caption := Caption;
   Icon := Application.Icon;
   TrayIcon.Hint := app_name+' '+app_version;
   // Loading configuration
-  Settings := TIniFile.Create(ExtractFilePath(application.ExeName)+'flean.ini');
+  ConfigFile := TIniFile.Create(ExtractFilePath(application.ExeName)+'flean.ini');
   // Resizing window
   Height:=11;
-  if (ParamStr(1)='-showid') or (Settings.ReadBool('appearance','showid',false))
+  if (ParamStr(1)='-showid') or (ConfigFile.ReadBool('appearance','showid',false))
     then  Width:=100
     else  Width:=16;
-  AlphaBlend := settings.ReadBool('appearance','transparent',true);
-  AlphaBlendValue := settings.ReadInteger('appearance','transparency',220);
-  Timer1.Interval := settings.ReadInteger('settings','interval',500);
-  halign := settings.ReadInteger('appearance','halign',1);
-  valign := settings.ReadInteger('appearance','valign',1);
+  AlphaBlend := ConfigFile.ReadBool('appearance','transparent',true);
+  AlphaBlendValue := ConfigFile.ReadInteger('appearance','transparency',220);
+  Timer1.Interval := ConfigFile.ReadInteger('settings','interval',500);
+  HAlign := ConfigFile.ReadInteger('appearance','halign',1);
+  VAlign := ConfigFile.ReadInteger('appearance','valign',1);
+
+  langfile := TIniFile.Create(ExtractFilePath(application.ExeName)+'langs\ru.ini');
 end;
 
-procedure TIndicator.MenuExitClick(Sender: TObject);
+procedure TfrIndicator.MenuExitClick(Sender: TObject);
 begin
   Halt;
 end;
 
-procedure TIndicator.MenuAboutClick(Sender: TObject);
+procedure TfrIndicator.MenuAboutClick(Sender: TObject);
 begin
-  ShowMessage(app_name+' '+app_version+#10#13#10#13+'The ultimate keyboard indicator'+#10#13+app_site+#10#13#10#13+'(c) '+app_manufacturer+', '+app_years);
+  frSettings.Tabs.ActivePageIndex := 1;
+  frSettings.Show;
+end;
+
+procedure TfrIndicator.Config1Click(Sender: TObject);
+begin
+  frSettings.Show;
+end;
+
+procedure TfrIndicator.MenuSettingsClick(Sender: TObject);
+begin
+  frSettings.Tabs.ActivePageIndex := 0;
+  frSettings.Show;
+end;
+
+procedure TfrIndicator.frOnOffClick(Sender: TObject);
+begin
+  if Timer1.Enabled then
+    TrayIcon.IconIndex := 1
+  else
+    TrayIcon.IconIndex := 0;
+  Timer1.Enabled := not(Timer1.Enabled);
+  Hide; 
+end;
+
+procedure TfrIndicator.FormShow(Sender: TObject);
+begin
+  LoadLanguage('Settings',frSettings);
 end;
 
 end.
