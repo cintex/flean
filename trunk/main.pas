@@ -14,7 +14,6 @@ type
     TrayIcon: TCoolTrayIcon;
     TrayPopup: TPopupMenu;
     MenuExit: TMenuItem;
-    idl: TLabel;
     MenuAbout: TMenuItem;
     XPManifest1: TXPManifest;
     MenuSettings: TMenuItem;
@@ -39,10 +38,11 @@ type
 
 var
   frIndicator: TfrIndicator;
-
-implementation
-
-{$R *.dfm}
+  ConfigFile, LangFile : TIniFile; // Configuration file
+  lid : integer; // Current layout's id
+  HAlign : byte;
+  VAlign : byte;
+  LangLoaded : Boolean;
 
 const app_name = 'Flean';
     app_version = '0.07';
@@ -50,11 +50,10 @@ const app_name = 'Flean';
     app_years = '2007-2008';
     app_site = 'http://code.google.com/p/flean/';
 
-var
-  ConfigFile, LangFile : TIniFile; // Configuration file
-  lid : integer; // Current layout's id
-  HAlign : byte;
-  VAlign : byte;
+
+implementation
+
+{$R *.dfm}
 
 procedure LoadLanguage(Section:string;Control:TWinControl);
   procedure LoadLanguageFor(Section:string;Control:TControl);
@@ -137,7 +136,6 @@ begin
     then begin
       lid := newlid;
       pic.Picture.LoadFromFile(ExtractFilePath(application.ExeName)+ConfigFile.ReadString('flags',IntToStr(newlid),'flags\undef.bmp'));
-      idl.Caption := IntToStr(newlid);
     end;
 end;
 
@@ -153,15 +151,14 @@ begin
   ConfigFile := TIniFile.Create(ExtractFilePath(application.ExeName)+'flean.ini');
   // Resizing window
   Height:=11;
-  if (ParamStr(1)='-showid') or (ConfigFile.ReadBool('appearance','showid',false))
-    then  Width:=100
-    else  Width:=16;
+  Width:=16;
   AlphaBlend := ConfigFile.ReadBool('appearance','transparent',true);
   AlphaBlendValue := ConfigFile.ReadInteger('appearance','transparency',220);
   Timer1.Interval := ConfigFile.ReadInteger('settings','interval',500);
   HAlign := ConfigFile.ReadInteger('appearance','halign',1);
   VAlign := ConfigFile.ReadInteger('appearance','valign',1);
   LangFile := TIniFile.Create(ExtractFilePath(application.ExeName)+'langs\'+ConfigFile.ReadString('settings','language','us')+'.ini');
+  LangLoaded := false;
 end;
 
 procedure TfrIndicator.MenuExitClick(Sender: TObject);
@@ -202,8 +199,25 @@ end;
 
 procedure TfrIndicator.FormShow(Sender: TObject);
 begin
-  LoadLanguageMenu('TrayMenu',TrayPopup.Items);
-  LoadLanguage('Settings',frSettings);
+  if not(LangLoaded) then begin
+    LoadLanguageMenu('traymenu',TrayPopup.Items);
+    LoadLanguage('settings',frSettings);
+    // ƒальше пошли вс€кие мелочи в настройках
+    with frSettings do begin
+      // это у нас список с вариантами расположени€ индикатора
+      with cmbAlignment.Items do begin
+        Strings[0] := LangFile.ReadString('settings','cmbAlignment.TopLeft',Strings[0]);
+        Strings[1] := LangFile.ReadString('settings','cmbAlignment.MiddleLeft',Strings[1]);
+        Strings[2] := LangFile.ReadString('settings','cmbAlignment.BottomLeft',Strings[2]);
+        Strings[3] := LangFile.ReadString('settings','cmbAlignment.TopRight',Strings[3]);
+        Strings[4] := LangFile.ReadString('settings','cmbAlignment.MiddleRight',Strings[4]);
+        Strings[5] := LangFile.ReadString('settings','cmbAlignment.BottomRight',Strings[5]);
+      end;
+      lblAppName.Caption := app_name;
+      lblAppVersion.Caption := lblAppVersion.Caption+' '+app_version;
+    end;
+    LangLoaded := false;
+  end;
 end;
 
 end.
