@@ -19,14 +19,15 @@ type
     XPManifest1: TXPManifest;
     MenuSettings: TMenuItem;
     imlMain: TImageList;
-    frOnOff: TMenuItem;
+    MenuEnable: TMenuItem;
+    MenuDisable: TMenuItem;
     procedure Timer1Timer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure MenuExitClick(Sender: TObject);
     procedure MenuAboutClick(Sender: TObject);
     procedure Config1Click(Sender: TObject);
     procedure MenuSettingsClick(Sender: TObject);
-    procedure frOnOffClick(Sender: TObject);
+    procedure MenuEnableClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     { Private declarations }
@@ -34,6 +35,7 @@ type
     { Public declarations }
   end;
   procedure LoadLanguage(Section:string;Control:TWinControl);
+  procedure LoadLanguageMenu(Section:string;MenuItems:TMenuItem);
 
 var
   frIndicator: TfrIndicator;
@@ -77,6 +79,17 @@ begin
     if Control.Controls[i] is TWinControl
       then LoadLanguage(Section,TWinControl(Control.Controls[i]))
       else LoadLanguageFor(Section,Control.Controls[i]);
+end;
+
+procedure LoadLanguageMenu(Section:string;MenuItems:TMenuItem);
+var
+  i : integer;
+begin
+  for i := 0 to MenuItems.Count-1 do begin
+    if not(MenuItems[i].IsLine) then
+      MenuItems[i].Caption := LangFile.ReadString(Section,MenuItems[i].Name,MenuItems[i].Caption);
+    LoadLanguageMenu(Section,MenuItems[i]);
+  end;
 end;
 
 procedure TfrIndicator.Timer1Timer(Sender: TObject);
@@ -148,8 +161,7 @@ begin
   Timer1.Interval := ConfigFile.ReadInteger('settings','interval',500);
   HAlign := ConfigFile.ReadInteger('appearance','halign',1);
   VAlign := ConfigFile.ReadInteger('appearance','valign',1);
-
-  langfile := TIniFile.Create(ExtractFilePath(application.ExeName)+'langs\ru.ini');
+  LangFile := TIniFile.Create(ExtractFilePath(application.ExeName)+'langs\'+ConfigFile.ReadString('settings','language','us')+'.ini');
 end;
 
 procedure TfrIndicator.MenuExitClick(Sender: TObject);
@@ -174,18 +186,23 @@ begin
   frSettings.Show;
 end;
 
-procedure TfrIndicator.frOnOffClick(Sender: TObject);
+procedure TfrIndicator.MenuEnableClick(Sender: TObject);
 begin
   if Timer1.Enabled then
     TrayIcon.IconIndex := 1
   else
     TrayIcon.IconIndex := 0;
   Timer1.Enabled := not(Timer1.Enabled);
-  Hide; 
+  MenuDisable.Visible := MenuEnable.Visible;
+  MenuEnable.Visible := not(MenuDisable.Visible);
+  MenuDisable.Default := MenuDisable.Visible;
+  MenuEnable.Default := MenuEnable.Visible;
+  Hide;
 end;
 
 procedure TfrIndicator.FormShow(Sender: TObject);
 begin
+  LoadLanguageMenu('TrayMenu',TrayPopup.Items);
   LoadLanguage('Settings',frSettings);
 end;
 
