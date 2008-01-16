@@ -1,7 +1,7 @@
 object frSettings: TfrSettings
-  Left = 323
-  Top = 152
-  Width = 565
+  Left = 368
+  Top = 188
+  Width = 599
   Height = 417
   BorderWidth = 5
   Caption = 'Flean'
@@ -18,13 +18,13 @@ object frSettings: TfrSettings
   object pnlBottom: TPanel
     Left = 0
     Top = 337
-    Width = 547
+    Width = 581
     Height = 36
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
     object btnClose: TButton
-      Left = 446
+      Left = 478
       Top = 10
       Width = 100
       Height = 25
@@ -37,15 +37,31 @@ object frSettings: TfrSettings
   object Tabs: TPageControl
     Left = 0
     Top = 0
-    Width = 547
+    Width = 581
     Height = 337
-    ActivePage = tabAbout
+    ActivePage = tabSettings
     Align = alClient
     Images = frIndicator.imlMain
     TabOrder = 1
     object tabSettings: TTabSheet
       Caption = '&Settings'
       ImageIndex = 2
+      object lblLanguage: TLabel
+        Left = 16
+        Top = 16
+        Width = 51
+        Height = 13
+        Caption = '&Language:'
+      end
+      object cbLanguage: TComboBox
+        Left = 16
+        Top = 32
+        Width = 145
+        Height = 21
+        ItemHeight = 13
+        TabOrder = 0
+        Text = 'cbLanguage'
+      end
     end
     object tabAbout: TTabSheet
       Caption = '&About'

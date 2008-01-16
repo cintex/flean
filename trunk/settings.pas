@@ -14,6 +14,8 @@ type
     tabSettings: TTabSheet;
     tabAbout: TTabSheet;
     lblFlean: TLabel;
+    lblLanguage: TLabel;
+    cbLanguage: TComboBox;
     procedure btnCloseClick(Sender: TObject);
   private
     { Private declarations }

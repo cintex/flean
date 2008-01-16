@@ -55,17 +55,22 @@ object frIndicator: TfrIndicator
     IconVisible = True
     IconIndex = 0
     PopupMenu = TrayPopup
-    OnClick = frOnOffClick
+    OnClick = MenuEnableClick
     Left = 72
     Top = 8
   end
   object TrayPopup: TPopupMenu
     Left = 104
     Top = 8
-    object frOnOff: TMenuItem
-      Caption = 'Dis&able / Enable'
+    object MenuDisable: TMenuItem
+      Caption = 'Dis&able'
       Default = True
-      OnClick = frOnOffClick
+      OnClick = MenuEnableClick
+    end
+    object MenuEnable: TMenuItem
+      Caption = 'En&able'
+      Visible = False
+      OnClick = MenuEnableClick
     end
     object MenuSettings: TMenuItem
       Caption = '&Settings...'
