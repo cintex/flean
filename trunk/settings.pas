@@ -19,22 +19,20 @@ type
     tbTransparency: TTrackBar;
     btnClose: TBitBtn;
     lblAppVersion: TLabel;
-    lblInterval: TLabel;
-    udInterval: TUpDown;
-    edInterval: TEdit;
     tabLayouts: TTabSheet;
     lnlAlignment: TLabel;
     cmbAlignment: TComboBox;
-    lblType: TLabel;
-    cmbType: TComboBox;
+    lblShow: TLabel;
+    cmbShow: TComboBox;
+    lblAuthors: TLabel;
+    memAuthors: TMemo;
     procedure tbTransparencyChange(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure cbTransparencyClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
-    procedure udIntervalChanging(Sender: TObject;
-      var AllowChange: Boolean);
     procedure FormShow(Sender: TObject);
     procedure cmbAlignmentChange(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure cmbShowChange(Sender: TObject);
   private
     { Private declarations }
   public
@@ -52,33 +50,23 @@ uses main;
 
 procedure TfrSettings.tbTransparencyChange(Sender: TObject);
 begin
-  ConfigFile.WriteInteger('appearance','transparency',tbTransparency.Position);
+  ConfigFile.WriteInteger('settings','transparency',tbTransparency.Position);
   frIndicator.AlphaBlendValue := tbTransparency.Position;
-end;
-
-procedure TfrSettings.FormCreate(Sender: TObject);
-begin
-  // Ставим галочки ;)
-  // Кстати, этот код работает только потому, что форма с индикатором
-  // создаётся раньше, чем форма настроек
-  cbTransparency.Checked := frIndicator.AlphaBlend;
-  tbTransparency.Enabled := frIndicator.AlphaBlend;
-  tbTransparency.Position := frIndicator.AlphaBlendValue;
-  udInterval.Position := frIndicator.Timer1.Interval;
 end;
 
 procedure TfrSettings.FormShow(Sender: TObject);
 begin
-{  with cmbAlignment do
-    if HAlign = 1 then
-      ItemIndex := VAlign - 1;
-    else}
-  cmbAlignment.ItemIndex := VAlign * HAlign - 1;
+  // Ставим галочки ;)
+  cbTransparency.Checked := frIndicator.AlphaBlend;
+  tbTransparency.Enabled := frIndicator.AlphaBlend;
+  tbTransparency.Position := frIndicator.AlphaBlendValue;
+  cmbAlignment.ItemIndex := VAlign-1+3*(HAlign-1);
+  cmbShow.ItemIndex := IndType;
 end;
 
 procedure TfrSettings.cbTransparencyClick(Sender: TObject);
 begin
-  ConfigFile.WriteBool('appearance','transparent',cbTransparency.Checked);
+  ConfigFile.WriteBool('settings','transparent',cbTransparency.Checked);
   tbTransparency.Enabled := cbTransparency.Checked;
   frIndicator.AlphaBlend := tbTransparency.Enabled;
 end;
@@ -86,13 +74,6 @@ end;
 procedure TfrSettings.btnCloseClick(Sender: TObject);
 begin
   Hide;
-end;
-
-procedure TfrSettings.udIntervalChanging(Sender: TObject;
-  var AllowChange: Boolean);
-begin
-  ConfigFile.WriteInteger('settings','interval',udInterval.Position);
-  frIndicator.Timer1.Interval := udInterval.Position;
 end;
 
 procedure TfrSettings.cmbAlignmentChange(Sender: TObject);
@@ -108,8 +89,19 @@ begin
       2, 5: VAlign := 3;
     end;
   end;
-  ConfigFile.WriteInteger('appearance','halign',HAlign);
-  ConfigFile.WriteInteger('appearance','valign',VAlign);
+  ConfigFile.WriteInteger('settings','halign',HAlign);
+  ConfigFile.WriteInteger('settings','valign',VAlign);
+end;
+
+procedure TfrSettings.FormCreate(Sender: TObject);
+begin
+  frSettings.memAuthors.Lines.LoadFromFile('docs\authors.txt');
+end;
+
+procedure TfrSettings.cmbShowChange(Sender: TObject);
+begin
+  ConfigFile.WriteInteger('settings','type',cmbShow.ItemIndex);
+  IndType := cmbShow.ItemIndex;
 end;
 
 end.

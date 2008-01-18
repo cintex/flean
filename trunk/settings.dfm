@@ -1,8 +1,8 @@
 object frSettings: TfrSettings
-  Left = 278
-  Top = 144
+  Left = 345
+  Top = 149
   Width = 467
-  Height = 294
+  Height = 322
   BorderWidth = 5
   Caption = 'Flean'
   Color = clBtnFace
@@ -19,7 +19,7 @@ object frSettings: TfrSettings
   TextHeight = 13
   object pnlBottom: TPanel
     Left = 0
-    Top = 214
+    Top = 242
     Width = 449
     Height = 36
     Align = alBottom
@@ -82,7 +82,7 @@ object frSettings: TfrSettings
     Left = 0
     Top = 0
     Width = 449
-    Height = 214
+    Height = 242
     ActivePage = tabSettings
     Align = alClient
     Images = frIndicator.imlMain
@@ -99,30 +99,21 @@ object frSettings: TfrSettings
         Enabled = False
         FocusControl = cmbLanguage
       end
-      object lblInterval: TLabel
+      object lnlAlignment: TLabel
         Left = 248
         Top = 64
-        Width = 97
+        Width = 49
         Height = 13
-        Caption = 'Update &interval (ms):'
-        FocusControl = edInterval
-      end
-      object lnlAlignment: TLabel
-        Left = 16
-        Top = 128
-        Width = 92
-        Height = 13
-        Caption = 'Indicator &alignment:'
+        Caption = '&Alignment:'
         FocusControl = cmbAlignment
       end
-      object lblType: TLabel
+      object lblShow: TLabel
         Left = 248
         Top = 8
-        Width = 27
+        Width = 30
         Height = 13
-        Caption = 'T&ype:'
-        Enabled = False
-        FocusControl = cmbType
+        Caption = 'Sho&w:'
+        FocusControl = cmbShow
       end
       object cmbLanguage: TComboBox
         Left = 16
@@ -153,36 +144,14 @@ object frSettings: TfrSettings
         TabOrder = 2
         OnChange = tbTransparencyChange
       end
-      object udInterval: TUpDown
-        Left = 401
-        Top = 80
-        Width = 21
-        Height = 21
-        Associate = edInterval
-        Min = 50
-        Max = 5000
-        Increment = 50
-        Position = 50
-        TabOrder = 3
-        OnChanging = udIntervalChanging
-      end
-      object edInterval: TEdit
+      object cmbAlignment: TComboBox
         Left = 248
         Top = 80
-        Width = 153
-        Height = 21
-        ReadOnly = True
-        TabOrder = 4
-        Text = '50'
-      end
-      object cmbAlignment: TComboBox
-        Left = 16
-        Top = 144
         Width = 170
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 5
+        TabOrder = 3
         OnChange = cmbAlignmentChange
         Items.Strings = (
           'Top-Left'
@@ -192,15 +161,18 @@ object frSettings: TfrSettings
           'Middle-Right'
           'Bottom-Right')
       end
-      object cmbType: TComboBox
+      object cmbShow: TComboBox
         Left = 248
         Top = 24
         Width = 169
         Height = 21
         Style = csDropDownList
-        Enabled = False
         ItemHeight = 13
-        TabOrder = 6
+        TabOrder = 4
+        OnChange = cmbShowChange
+        Items.Strings = (
+          'Near input area'
+          'Near text caret')
       end
     end
     object tabLayouts: TTabSheet
@@ -228,6 +200,21 @@ object frSettings: TfrSettings
         Width = 34
         Height = 13
         Caption = 'version'
+      end
+      object lblAuthors: TLabel
+        Left = 32
+        Top = 136
+        Width = 39
+        Height = 13
+        Caption = 'Authors:'
+      end
+      object memAuthors: TMemo
+        Left = 32
+        Top = 152
+        Width = 401
+        Height = 49
+        ReadOnly = True
+        TabOrder = 0
       end
     end
   end
