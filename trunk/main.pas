@@ -46,7 +46,7 @@ var
   oid, tid : DWORD;
 
 const app_name = 'Flean';
-    app_version = '0.07';
+    app_version = '0.10';
     app_manufacturer = 'Flean developers';
     app_years = '2007-2008';
     app_site = 'http://code.google.com/p/flean/';
@@ -108,9 +108,16 @@ var
   newoid : DWORD;
   Result : longbool;
 begin
-  // Это для будущего определения раскладки
   hWindow := GetForegroundWindow;
   newoid := GetWindowThreadProcessId(hWindow,nil);
+  // Getting id of current layout
+  newlid := GetKeyboardLayout(oid) shr $10;
+  if newlid <> lid then begin
+    lid := newlid;
+    pic.Picture.LoadFromFile(ConfigFile.ReadString('flags',IntToStr(newlid),'flags\undef.bmp'));
+    Width := pic.Picture.Bitmap.Width;
+    Height := pic.Picture.Bitmap.Height;
+  end;
   // Подключаемся к процессу
   if newoid <> oid then begin
     AttachThreadInput(tid,oid,false);
@@ -161,12 +168,6 @@ begin
       if hEdit=null
         then hide;
     end;
-  end;
-  // Getting id of current layout
-  newlid := GetKeyboardLayout(oid) shr $10;
-  if newlid <> lid then begin
-    lid := newlid;
-    pic.Picture.LoadFromFile(ConfigFile.ReadString('flags',IntToStr(newlid),'flags\undef.bmp'));
   end;
 end;
 
