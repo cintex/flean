@@ -144,7 +144,7 @@ begin
       Pic.Bitmap.Transparent := true;
     end else begin
       Font.Style := [];
-      if lbLayouts.Items.Strings[Index]<>'' then
+      if (lbLayouts.Items.Strings[Index]<>'') and (FileExists(ConfigFile.ReadString('flags',lbLayouts.Items.Strings[Index],'flags\undef.bmp'))) then
         Pic.LoadFromFile(ConfigFile.ReadString('flags',lbLayouts.Items.Strings[Index],'flags\undef.bmp'))
       else
         Pic.LoadFromFile('flags\undef.bmp');
@@ -198,6 +198,10 @@ begin
       ConfigFile.DeleteKey('flags',Items.Strings[ItemIndex]);
       Items.Strings[ItemIndex] := edId.Text;
       ConfigFile.WriteString('flags',edId.Text,edIcon.Text);
+    end else begin
+      Items.Insert(Items.Count - 1,edId.Text);
+      ItemIndex := Items.Count - 2;
+      ConfigFile.WriteString('flags',edId.Text,edIcon.text);
     end;
   end;
 end;
