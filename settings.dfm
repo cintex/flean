@@ -1,10 +1,12 @@
 object frSettings: TfrSettings
   Left = 345
   Top = 149
-  Width = 467
-  Height = 322
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
   BorderWidth = 5
   Caption = 'Flean'
+  ClientHeight = 278
+  ClientWidth = 416
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,13 +22,13 @@ object frSettings: TfrSettings
   object pnlBottom: TPanel
     Left = 0
     Top = 242
-    Width = 449
+    Width = 416
     Height = 36
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
     object btnClose: TBitBtn
-      Left = 344
+      Left = 312
       Top = 8
       Width = 100
       Height = 25
@@ -81,17 +83,18 @@ object frSettings: TfrSettings
   object Tabs: TPageControl
     Left = 0
     Top = 0
-    Width = 449
+    Width = 416
     Height = 242
-    ActivePage = tabSettings
+    ActivePage = tabLayouts
     Align = alClient
     Images = frIndicator.imlMain
     TabOrder = 1
     object tabSettings: TTabSheet
+      BorderWidth = 10
       Caption = '&Settings'
       ImageIndex = 2
       object lblLanguage: TLabel
-        Left = 16
+        Left = 0
         Top = 8
         Width = 51
         Height = 13
@@ -100,15 +103,15 @@ object frSettings: TfrSettings
         FocusControl = cmbLanguage
       end
       object lnlAlignment: TLabel
-        Left = 248
-        Top = 64
+        Left = 216
+        Top = 72
         Width = 49
         Height = 13
         Caption = '&Alignment:'
         FocusControl = cmbAlignment
       end
       object lblShow: TLabel
-        Left = 248
+        Left = 216
         Top = 8
         Width = 30
         Height = 13
@@ -116,7 +119,7 @@ object frSettings: TfrSettings
         FocusControl = cmbShow
       end
       object cmbLanguage: TComboBox
-        Left = 16
+        Left = 0
         Top = 24
         Width = 170
         Height = 21
@@ -126,32 +129,32 @@ object frSettings: TfrSettings
         TabOrder = 0
       end
       object cbTransparency: TCheckBox
-        Left = 16
-        Top = 64
+        Left = 0
+        Top = 72
         Width = 97
         Height = 17
         Caption = '&Transparency:'
-        TabOrder = 1
+        TabOrder = 2
         OnClick = cbTransparencyClick
       end
       object tbTransparency: TTrackBar
-        Left = 16
-        Top = 80
+        Left = 0
+        Top = 88
         Width = 170
         Height = 45
         Max = 255
         Frequency = 15
-        TabOrder = 2
+        TabOrder = 3
         OnChange = tbTransparencyChange
       end
       object cmbAlignment: TComboBox
-        Left = 248
-        Top = 80
+        Left = 216
+        Top = 88
         Width = 170
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 3
+        TabOrder = 4
         OnChange = cmbAlignmentChange
         Items.Strings = (
           'Top-Left'
@@ -162,13 +165,13 @@ object frSettings: TfrSettings
           'Bottom-Right')
       end
       object cmbShow: TComboBox
-        Left = 248
+        Left = 216
         Top = 24
         Width = 169
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 4
+        TabOrder = 1
         OnChange = cmbShowChange
         Items.Strings = (
           'Near input area'
@@ -176,14 +179,88 @@ object frSettings: TfrSettings
       end
     end
     object tabLayouts: TTabSheet
+      BorderWidth = 10
       Caption = '&Layouts'
+      object pnlLayouts: TPanel
+        Left = 112
+        Top = 0
+        Width = 276
+        Height = 193
+        Align = alRight
+        BevelOuter = bvNone
+        TabOrder = 0
+        object lblId: TLabel
+          Left = 16
+          Top = 0
+          Width = 14
+          Height = 13
+          Caption = '&ID:'
+          FocusControl = edId
+        end
+        object lblIcon: TLabel
+          Left = 16
+          Top = 64
+          Width = 24
+          Height = 13
+          Caption = 'I&con:'
+        end
+        object edId: TEdit
+          Left = 16
+          Top = 16
+          Width = 170
+          Height = 21
+          ReadOnly = True
+          TabOrder = 0
+        end
+        object btnIdDetect: TButton
+          Left = 192
+          Top = 16
+          Width = 75
+          Height = 25
+          Caption = 'De&tect...'
+          TabOrder = 1
+          OnClick = btnIdDetectClick
+        end
+        object edIcon: TEdit
+          Left = 16
+          Top = 80
+          Width = 170
+          Height = 21
+          ReadOnly = True
+          TabOrder = 2
+        end
+        object btnIconBrowse: TButton
+          Left = 192
+          Top = 80
+          Width = 75
+          Height = 25
+          Caption = 'B&rowse...'
+          TabOrder = 3
+          OnClick = btnIconBrowseClick
+        end
+      end
+      object lbLayouts: TListBox
+        Left = 0
+        Top = 0
+        Width = 112
+        Height = 193
+        Style = lbOwnerDrawFixed
+        Align = alClient
+        ItemHeight = 32
+        PopupMenu = pmLayouts
+        TabOrder = 1
+        OnClick = lbLayoutsClick
+        OnContextPopup = lbLayoutsContextPopup
+        OnDrawItem = lbLayoutsDrawItem
+      end
     end
     object tabAbout: TTabSheet
+      BorderWidth = 10
       Caption = '&About'
       ImageIndex = 3
       object lblAppName: TLabel
-        Left = 32
-        Top = 32
+        Left = 16
+        Top = 16
         Width = 54
         Height = 24
         Caption = 'Flean'
@@ -195,27 +272,61 @@ object frSettings: TfrSettings
         ParentFont = False
       end
       object lblAppVersion: TLabel
-        Left = 32
-        Top = 56
+        Left = 16
+        Top = 40
         Width = 34
         Height = 13
         Caption = 'version'
       end
       object lblAuthors: TLabel
-        Left = 32
-        Top = 136
+        Left = 16
+        Top = 120
         Width = 39
         Height = 13
         Caption = 'Authors:'
       end
+      object lblSite: TLabel
+        Left = 16
+        Top = 72
+        Width = 28
+        Height = 13
+        Cursor = crHandPoint
+        Caption = 'lblSite'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlue
+        Font.Height = -11
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsUnderline]
+        ParentFont = False
+        OnClick = lblSiteClick
+      end
       object memAuthors: TMemo
-        Left = 32
-        Top = 152
-        Width = 401
+        Left = 16
+        Top = 136
+        Width = 353
         Height = 49
+        Align = alCustom
         ReadOnly = True
         TabOrder = 0
       end
     end
+  end
+  object pmLayouts: TPopupMenu
+    Images = frIndicator.imlMain
+    Left = 372
+    Top = 201
+    object LayoutDelete: TMenuItem
+      Caption = '&Delete'
+      ImageIndex = 5
+      OnClick = LayoutDeleteClick
+    end
+  end
+  object dlgIconBrowse: TOpenPictureDialog
+    DefaultExt = 'bmp'
+    Filter = 'Bitmaps (*.bmp)|*.bmp'
+    InitialDir = 'flags'
+    Options = [ofHideReadOnly, ofNoChangeDir, ofPathMustExist, ofFileMustExist, ofEnableSizing]
+    Left = 332
+    Top = 201
   end
 end
