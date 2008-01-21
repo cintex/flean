@@ -73,8 +73,10 @@ uses main;
 
 {$R *.dfm}
 
+
 procedure TfrSettings.LoadSettings;
 begin
+  cmbLanguage.ItemIndex := cmbLanguage.Items.IndexOf(ConfigFile.ReadString('settings','language','U.S. English'));
   cbTransparency.Checked := frIndicator.AlphaBlend;
   tbTransparency.Enabled := frIndicator.AlphaBlend;
   tbTransparency.Position := frIndicator.AlphaBlendValue;
@@ -124,6 +126,8 @@ begin
 end;
 
 procedure TfrSettings.FormCreate(Sender: TObject);
+var
+  SR : TSearchRec;
 begin
   frSettings.memAuthors.Lines.LoadFromFile('docs\authors.txt');
   lblSite.Caption := app_site;
@@ -131,6 +135,13 @@ begin
   ConfigFile.ReadSection('Flags',lbLayouts.Items);
   lbLayouts.Items.Add(LangFile.ReadString('settings','LayoutAdd','Add'));
   imgLogo.Picture.Icon := Application.Icon;
+  if FindFirst('langs\*.ini', faAnyFile, SR) = 0 then begin
+    repeat
+      if (SR.Attr <> faDirectory) then
+        cmbLanguage.Items.Add(Copy(SR.Name,0,Length(SR.Name)-4));
+    until FindNext(SR) <> 0;
+    FindClose(SR);
+  end;
 end;
 
 procedure TfrSettings.cmbShowChange(Sender: TObject);
