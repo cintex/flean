@@ -85,7 +85,7 @@ object frSettings: TfrSettings
     Top = 0
     Width = 416
     Height = 291
-    ActivePage = tabAbout
+    ActivePage = tabSettings
     Align = alClient
     Images = frIndicator.imlMain
     TabOrder = 1
@@ -126,9 +126,6 @@ object frSettings: TfrSettings
         ItemHeight = 13
         TabOrder = 0
         OnChange = cmbLanguageChange
-        Items.Strings = (
-          'Russian'
-          'U.S. English')
       end
       object cbTransparency: TCheckBox
         Left = 0
