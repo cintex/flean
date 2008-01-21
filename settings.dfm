@@ -1,11 +1,11 @@
 object frSettings: TfrSettings
-  Left = 345
-  Top = 149
+  Left = 243
+  Top = 261
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   BorderWidth = 5
   Caption = 'Flean'
-  ClientHeight = 278
+  ClientHeight = 327
   ClientWidth = 416
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object frSettings: TfrSettings
   TextHeight = 13
   object pnlBottom: TPanel
     Left = 0
-    Top = 242
+    Top = 291
     Width = 416
     Height = 36
     Align = alBottom
@@ -84,8 +84,8 @@ object frSettings: TfrSettings
     Left = 0
     Top = 0
     Width = 416
-    Height = 242
-    ActivePage = tabLayouts
+    Height = 291
+    ActivePage = tabSettings
     Align = alClient
     Images = frIndicator.imlMain
     TabOrder = 1
@@ -99,15 +99,14 @@ object frSettings: TfrSettings
         Width = 51
         Height = 13
         Caption = 'Lan&guage:'
-        Enabled = False
         FocusControl = cmbLanguage
       end
-      object lnlAlignment: TLabel
+      object lblAlignment: TLabel
         Left = 216
         Top = 72
-        Width = 49
+        Width = 92
         Height = 13
-        Caption = '&Alignment:'
+        Caption = 'Indicator &alignment:'
         FocusControl = cmbAlignment
       end
       object lblShow: TLabel
@@ -124,9 +123,12 @@ object frSettings: TfrSettings
         Width = 170
         Height = 21
         Style = csDropDownList
-        Enabled = False
         ItemHeight = 13
         TabOrder = 0
+        OnChange = cmbLanguageChange
+        Items.Strings = (
+          'Russian'
+          'U.S. English')
       end
       object cbTransparency: TCheckBox
         Left = 0
@@ -185,7 +187,7 @@ object frSettings: TfrSettings
         Left = 112
         Top = 0
         Width = 276
-        Height = 193
+        Height = 242
         Align = alRight
         BevelOuter = bvNone
         TabOrder = 0
@@ -217,7 +219,7 @@ object frSettings: TfrSettings
           Top = 16
           Width = 75
           Height = 25
-          Caption = 'De&tect...'
+          Caption = 'De&tect'
           TabOrder = 1
           OnClick = btnIdDetectClick
         end
@@ -243,7 +245,7 @@ object frSettings: TfrSettings
         Left = 0
         Top = 0
         Width = 112
-        Height = 193
+        Height = 242
         Style = lbOwnerDrawFixed
         Align = alClient
         ItemHeight = 32
@@ -259,7 +261,7 @@ object frSettings: TfrSettings
       Caption = '&About'
       ImageIndex = 3
       object lblAppName: TLabel
-        Left = 16
+        Left = 56
         Top = 16
         Width = 54
         Height = 24
@@ -272,7 +274,7 @@ object frSettings: TfrSettings
         ParentFont = False
       end
       object lblAppVersion: TLabel
-        Left = 16
+        Left = 56
         Top = 40
         Width = 34
         Height = 13
@@ -280,14 +282,15 @@ object frSettings: TfrSettings
       end
       object lblAuthors: TLabel
         Left = 16
-        Top = 120
+        Top = 168
         Width = 39
         Height = 13
         Caption = 'Authors:'
+        FocusControl = memAuthors
       end
       object lblSite: TLabel
         Left = 16
-        Top = 72
+        Top = 64
         Width = 28
         Height = 13
         Cursor = crHandPoint
@@ -300,9 +303,28 @@ object frSettings: TfrSettings
         ParentFont = False
         OnClick = lblSiteClick
       end
+      object lblCopyright: TLabel
+        Left = 16
+        Top = 88
+        Width = 353
+        Height = 73
+        AutoSize = False
+        Caption = 
+          'This program is free software: you can redistribute it and/or mo' +
+          'dify it under the terms of the GNU General Public License as pub' +
+          'lished by the Free Software Foundation, either version 3 of the ' +
+          'License, or (at your option) any later version.'
+        WordWrap = True
+      end
+      object imgLogo: TImage
+        Left = 16
+        Top = 16
+        Width = 32
+        Height = 32
+      end
       object memAuthors: TMemo
         Left = 16
-        Top = 136
+        Top = 184
         Width = 353
         Height = 49
         Align = alCustom

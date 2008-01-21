@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ImgList, ExtCtrls, StdCtrls, IniFiles, CoolTrayIcon, Menus, settings,
-  XPMan, TypInfo;
+  Dialogs, ImgList, ExtCtrls, StdCtrls, CoolTrayIcon, Menus, settings,
+  XPMan, TypInfo, IniFiles;
 
 type
   TfrIndicator = class(TForm)
@@ -36,6 +36,7 @@ type
   procedure LoadLanguageForm(Section:string;Control:TWinControl);
   procedure LoadLanguageMenu(Section:string;MenuItems:TMenuItem);
   procedure LoadLanguageCombobox(Section:string;cmb:TCombobox);
+  procedure LoadLanguageApp();
 
 var
   frIndicator: TfrIndicator;
@@ -49,7 +50,7 @@ const app_name = 'Flean';
     app_version = '0.10';
     app_manufacturer = 'Flean developers';
     app_years = '2007-2008';
-    app_site = 'http://code.google.com/p/flean/';
+    app_site = 'http://flean.googlecode.com/';
 
 
 implementation
@@ -97,6 +98,21 @@ begin
   with cmb.Items do
     for i:=0 to Count-1 do
       Strings[i] := LangFile.ReadString(Section,cmb.Name+'.'+IntToStr(i),Strings[i]);
+end;
+
+procedure LoadLanguageApp();
+begin
+  LoadLanguageMenu('traymenu',frIndicator.TrayPopup.Items);
+  LoadLanguageForm('settings',frSettings);
+  LoadLanguageMenu('settings',frSettings.pmLayouts.Items);
+  // ƒальше пошли вс€кие мелочи в настройках
+  with frSettings do begin
+    // это у нас список с вариантами расположени€ индикатора
+    LoadLanguageCombobox('settings',cmbAlignment);
+    LoadLanguageCombobox('settings',cmbShow);
+    lblAppName.Caption := app_name;
+    lblAppVersion.Caption := lblAppVersion.Caption+' '+app_version;
+  end;
 end;
 
 procedure TfrIndicator.Timer1Timer(Sender: TObject);
@@ -235,16 +251,7 @@ var
   i : byte;
 begin
   if not(LangLoaded) then begin
-    LoadLanguageMenu('traymenu',TrayPopup.Items);
-    LoadLanguageForm('settings',frSettings);
-    // ƒальше пошли вс€кие мелочи в настройках
-    with frSettings do begin
-      // это у нас список с вариантами расположени€ индикатора
-      LoadLanguageCombobox('Settings',cmbAlignment);
-      LoadLanguageCombobox('Settings',cmbShow);
-      lblAppName.Caption := app_name;
-      lblAppVersion.Caption := lblAppVersion.Caption+' '+app_version;
-    end;
+    LoadLanguageApp;
     LangLoaded := false;
   end;
 end;
