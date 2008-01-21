@@ -20,7 +20,7 @@ type
     btnClose: TBitBtn;
     lblAppVersion: TLabel;
     tabLayouts: TTabSheet;
-    lnlAlignment: TLabel;
+    lblAlignment: TLabel;
     cmbAlignment: TComboBox;
     lblShow: TLabel;
     cmbShow: TComboBox;
@@ -38,6 +38,9 @@ type
     edIcon: TEdit;
     btnIconBrowse: TButton;
     dlgIconBrowse: TOpenPictureDialog;
+    lblCopyright: TLabel;
+    imgLogo: TImage;
+    procedure LoadSettings;
     procedure tbTransparencyChange(Sender: TObject);
     procedure cbTransparencyClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
@@ -54,6 +57,7 @@ type
     procedure btnIdDetectClick(Sender: TObject);
     procedure LayoutDeleteClick(Sender: TObject);
     procedure btnIconBrowseClick(Sender: TObject);
+    procedure cmbLanguageChange(Sender: TObject);
   private
     { Private declarations }
   public
@@ -69,6 +73,16 @@ uses main;
 
 {$R *.dfm}
 
+procedure TfrSettings.LoadSettings;
+begin
+  cbTransparency.Checked := frIndicator.AlphaBlend;
+  tbTransparency.Enabled := frIndicator.AlphaBlend;
+  tbTransparency.Position := frIndicator.AlphaBlendValue;
+  cmbAlignment.ItemIndex := VAlign-1+3*(HAlign-1);
+  cmbShow.ItemIndex := IndType;
+  lbLayouts.ItemIndex := lbLayouts.Items.Count-1;
+end;
+
 procedure TfrSettings.tbTransparencyChange(Sender: TObject);
 begin
   ConfigFile.WriteInteger('settings','transparency',tbTransparency.Position);
@@ -77,13 +91,7 @@ end;
 
 procedure TfrSettings.FormShow(Sender: TObject);
 begin
-  // Ставим галочки ;)
-  cbTransparency.Checked := frIndicator.AlphaBlend;
-  tbTransparency.Enabled := frIndicator.AlphaBlend;
-  tbTransparency.Position := frIndicator.AlphaBlendValue;
-  cmbAlignment.ItemIndex := VAlign-1+3*(HAlign-1);
-  cmbShow.ItemIndex := IndType;
-  lbLayouts.ItemIndex := lbLayouts.Items.Count-1;
+  LoadSettings;
 end;
 
 procedure TfrSettings.cbTransparencyClick(Sender: TObject);
@@ -121,7 +129,8 @@ begin
   lblSite.Caption := app_site;
   lbLayouts.Items.Clear;
   ConfigFile.ReadSection('Flags',lbLayouts.Items);
-  lbLayouts.Items.Add('Add');
+  lbLayouts.Items.Add(LangFile.ReadString('settings','LayoutAdd','Add'));
+  imgLogo.Picture.Icon := Application.Icon;
 end;
 
 procedure TfrSettings.cmbShowChange(Sender: TObject);
@@ -174,6 +183,7 @@ begin
       Handled := true
     else begin
       ItemIndex := IAP;
+      lbLayoutsClick(self);
       Handled := false;
     end;
   end;
@@ -183,7 +193,7 @@ procedure TfrSettings.lbLayoutsClick(Sender: TObject);
 begin
   if lbLayouts.ItemIndex <> lbLayouts.Items.Count - 1 then begin
     edId.Text := lbLayouts.Items.Strings[lbLayouts.ItemIndex];
-    edIcon.Text := ConfigFile.ReadString('flags',edId.Text,'flags/undef.bmp');
+    edIcon.Text := ConfigFile.ReadString('flags',edId.Text,'flags\undef.bmp');
   end else begin
     edId.Text := '';
     edIcon.Text := '';
@@ -223,6 +233,14 @@ begin
       lbLayoutsDrawItem(lbLayouts,lbLayouts.ItemIndex,lbLayouts.ItemRect(lbLayouts.ItemIndex),[odSelected]);
     end;
   end;
+end;
+
+procedure TfrSettings.cmbLanguageChange(Sender: TObject);
+begin
+  LangFile.Create(ExtractFilePath(Application.ExeName)+'langs\'+cmbLanguage.Items.Strings[cmbLanguage.ItemIndex]+'.ini');
+  ConfigFile.WriteString('settings','language',cmbLanguage.Items.Strings[cmbLanguage.ItemIndex]);
+  LoadLanguageApp;
+  LoadSettings;
 end;
 
 end.
