@@ -38,7 +38,7 @@ type
     edIcon: TEdit;
     btnIconBrowse: TButton;
     dlgIconBrowse: TOpenPictureDialog;
-    lblCopyright: TLabel;
+    lblLicense: TLabel;
     imgLogo: TImage;
     procedure LoadSettings;
     procedure tbTransparencyChange(Sender: TObject);

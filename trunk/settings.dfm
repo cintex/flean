@@ -85,7 +85,7 @@ object frSettings: TfrSettings
     Top = 0
     Width = 416
     Height = 291
-    ActivePage = tabSettings
+    ActivePage = tabAbout
     Align = alClient
     Images = frIndicator.imlMain
     TabOrder = 1
@@ -303,7 +303,7 @@ object frSettings: TfrSettings
         ParentFont = False
         OnClick = lblSiteClick
       end
-      object lblCopyright: TLabel
+      object lblLicense: TLabel
         Left = 16
         Top = 88
         Width = 353
