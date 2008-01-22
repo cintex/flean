@@ -133,7 +133,7 @@ begin
   lblSite.Caption := app_site;
   lbLayouts.Items.Clear;
   ConfigFile.ReadSection('Flags',lbLayouts.Items);
-  lbLayouts.Items.Add(LangFile.ReadString('settings','LayoutAdd','Add'));
+  lbLayouts.Items.Add('Add');
   imgLogo.Picture.Icon := Application.Icon;
   if FindFirst('langs\*.ini', faAnyFile, SR) = 0 then begin
     repeat
@@ -213,16 +213,19 @@ end;
 
 procedure TfrSettings.btnIdDetectClick(Sender: TObject);
 begin
-  edId.Text := IntToStr(GetKeyboardLayout(tid) shr $10);
+  edId.Text := IntToStr(GetKeyboardLayout(GetCurrentThreadId) shr $10);
   with lbLayouts do begin
     if ItemIndex <> Items.Count - 1 then begin
       ConfigFile.DeleteKey('flags',Items.Strings[ItemIndex]);
       Items.Strings[ItemIndex] := edId.Text;
       ConfigFile.WriteString('flags',edId.Text,edIcon.Text);
     end else begin
-      Items.Insert(Items.Count - 1,edId.Text);
-      ItemIndex := Items.Count - 2;
-      ConfigFile.WriteString('flags',edId.Text,edIcon.text);
+      if Items.IndexOf(edId.Text) = -1 then begin
+        Items.Insert(Items.Count - 1,edId.Text);
+        ItemIndex := Items.Count - 2;
+        ConfigFile.WriteString('flags',edId.Text,edIcon.text);
+      end else
+        ItemIndex := Items.IndexOf(edId.Text);
     end;
   end;
 end;

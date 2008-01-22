@@ -27,7 +27,7 @@ object frIndicator: TfrIndicator
     AutoSize = True
   end
   object Timer1: TTimer
-    Interval = 50
+    Interval = 40
     OnTimer = Timer1Timer
     Left = 40
     Top = 8

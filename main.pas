@@ -44,7 +44,6 @@ var
   lid : integer; // Current layout's id
   HAlign, IndType, VAlign : byte;
   LangLoaded : Boolean;
-  oid, tid : DWORD;
 
 const app_name = 'Flean';
     app_version = '0.10';
@@ -107,6 +106,7 @@ begin
   LoadLanguageMenu('settings',frSettings.pmLayouts.Items);
   // Дальше пошли всякие мелочи в настройках
   with frSettings do begin
+    lbLayouts.Items.Strings[lbLayouts.Items.Count-1] := LangFile.ReadString('settings','LayoutAdd',lbLayouts.Items.Strings[lbLayouts.Items.Count-1]);
     // это у нас список с вариантами расположения индикатора
     LoadLanguageCombobox('settings',cmbAlignment);
     LoadLanguageCombobox('settings',cmbShow);
@@ -120,12 +120,14 @@ var
   hWindow,hEdit : THandle;
   newlid : integer;
   r : TRect;
+  oid : DWORD;
   p : TPoint;
-  newoid : DWORD;
   Result : longbool;
+  gti : TGUIThreadInfo;
 begin
+  gti.cbSize := SizeOf(TGUIThreadInfo);
   hWindow := GetForegroundWindow;
-  newoid := GetWindowThreadProcessId(hWindow,nil);
+  oid := GetWindowThreadProcessId(hWindow,nil);
   // Getting id of current layout
   newlid := GetKeyboardLayout(oid) shr $10;
   if newlid <> lid then begin
@@ -134,57 +136,47 @@ begin
     Width := pic.Picture.Bitmap.Width;
     Height := pic.Picture.Bitmap.Height;
   end;
-  // Подключаемся к процессу
-  if newoid <> oid then begin
-    AttachThreadInput(tid,oid,false);
-    oid := newoid;
-    if oid<>tid then
-      AttachThreadInput(tid,oid,true);
-  end;
-  // Получаем координаты активного поля
-  hEdit := GetFocus;
-   GetWindowRect(hEdit,r);
-  case IndType of
-    0 : begin
-      // Перемещаем индикатор
-      if (top<>r.Right) and (left<>r.Left) then begin
-        if not(visible) then
-          ShowWindow(Handle, SW_SHOWNOACTIVATE);
-        case VAlign of
-          1 : top := r.Top;
-          2 : top := r.Top + (r.Bottom - r.Top - Height) div 2;
-          3 : top := r.Bottom - Height;
+  if IsWindow(hWindow) then begin
+    if GetGUIThreadInfo(oid,gti) and (true) then
+      case IndType of
+        { --- Near current input --- }
+        0: begin
+          if GetWindowRect(gti.hwndFocus,r) then begin
+            if not(Visible) then
+              ShowWindow(Handle, SW_SHOWNOACTIVATE);
+            case HAlign of
+              1 : Left := r.Left - Width;
+              2 : Left := r.Right;
+            end;
+            case VAlign of
+              1 : Top := r.Top;
+              2 : Top := r.Top + (r.Bottom - r.Top - Height) div 2;
+              3 : Top := r.Bottom - Height;
+            end;
+          end;
         end;
-        case HAlign of
-          1 : left := r.Left-Width;
-          2 : left := r.Right;
+        { --- Near text caret --- }
+        1: begin
+          p.X := 0;
+          p.Y := 0;
+          if Windows.ClientToScreen(gti.hwndCaret,p) then begin
+            if not(Visible) then
+              ShowWindow(Handle, SW_SHOWNOACTIVATE);
+            case HAlign of
+              1 : Left := p.X + gti.rcCaret.Left - Width;
+              2 : Left := p.X + gti.rcCaret.Right;
+            end;
+            case VAlign of
+              1 : Top := p.Y + gti.rcCaret.Top - Height;
+              2 : Top := p.Y + gti.rcCaret.Top + (gti.rcCaret.Bottom - gti.rcCaret.Top - Height) div 2;
+              3 : Top := p.Y + gti.rcCaret.Bottom;
+            end;
+          end;
         end;
-      end
-      else if visible
-        then hide;
-      if hEdit=null
-        then hide;
-    end;
-    1 : begin
-      if GetCaretPos(p) and (top<>r.Right) and (left<>r.Left) then begin
-          if not(visible) then
-            ShowWindow(Handle, SW_SHOWNOACTIVATE);
-        Windows.ClientToScreen(hEdit,p);
-        case VAlign of
-          1 : top := p.Y - Height;
-          2 : top := p.Y;
-          3 : top := p.Y + 15;
-        end;
-        case HAlign of
-          1 : left := p.X - Width - 2;
-          2 : left := p.X + 2;
-        end;
-      end else if visible then
+      end else
         Hide;
-      if hEdit=null
-        then hide;
-    end;
-  end;
+    end else
+      Hide;
 end;
 
 procedure TfrIndicator.FormCreate(Sender: TObject);
@@ -195,7 +187,6 @@ begin
   frSettings.Caption := Caption;
   Icon := Application.Icon;
   TrayIcon.Hint := app_name+' '+app_version;
-  tid := GetCurrentThreadId;
   // Loading configuration
   ConfigFile := TIniFile.Create(ExtractFilePath(application.ExeName)+'flean.ini');
   // Resizing window
