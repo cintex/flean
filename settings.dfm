@@ -130,7 +130,7 @@ object frSettings: TfrSettings
       object cbTransparency: TCheckBox
         Left = 0
         Top = 72
-        Width = 97
+        Width = 169
         Height = 17
         Caption = '&Transparency:'
         TabOrder = 2
@@ -175,6 +175,15 @@ object frSettings: TfrSettings
         Items.Strings = (
           'Near input area'
           'Near text caret')
+      end
+      object cbShowAlways: TCheckBox
+        Left = 216
+        Top = 136
+        Width = 169
+        Height = 17
+        Caption = 'Show alw&ays'
+        TabOrder = 5
+        OnClick = cbShowAlwaysClick
       end
     end
     object tabLayouts: TTabSheet
@@ -333,7 +342,7 @@ object frSettings: TfrSettings
   object pmLayouts: TPopupMenu
     Images = frIndicator.imlMain
     Left = 372
-    Top = 201
+    Top = 233
     object LayoutDelete: TMenuItem
       Caption = '&Delete'
       ImageIndex = 5
@@ -346,6 +355,6 @@ object frSettings: TfrSettings
     InitialDir = 'flags'
     Options = [ofHideReadOnly, ofNoChangeDir, ofPathMustExist, ofFileMustExist, ofEnableSizing]
     Left = 332
-    Top = 201
+    Top = 233
   end
 end

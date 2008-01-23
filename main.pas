@@ -43,7 +43,7 @@ var
   ConfigFile, LangFile : TIniFile; // Configuration file
   lid : integer; // Current layout's id
   HAlign, IndType, VAlign : byte;
-  LangLoaded : Boolean;
+  LangLoaded, ShowAlways : Boolean;
 
 const app_name = 'Flean';
     app_version = '0.10';
@@ -136,47 +136,46 @@ begin
     Width := pic.Picture.Bitmap.Width;
     Height := pic.Picture.Bitmap.Height;
   end;
-  if IsWindow(hWindow) then begin
-    if GetGUIThreadInfo(oid,gti) and (true) then
-      case IndType of
-        { --- Near current input --- }
-        0: begin
-          if GetWindowRect(gti.hwndFocus,r) then begin
-            if not(Visible) then
-              ShowWindow(Handle, SW_SHOWNOACTIVATE);
-            case HAlign of
-              1 : Left := r.Left - Width;
-              2 : Left := r.Right;
-            end;
-            case VAlign of
-              1 : Top := r.Top;
-              2 : Top := r.Top + (r.Bottom - r.Top - Height) div 2;
-              3 : Top := r.Bottom - Height;
-            end;
+  GetGUIThreadInfo(oid,gti);
+  if ShowAlways or (gti.flags and GUI_CARETBLINKING<>0) then begin
+    case IndType of
+      { --- Near current input --- }
+      0: begin
+        if GetWindowRect(gti.hwndFocus,r) then begin
+          if not(Visible) then
+            ShowWindow(Handle, SW_SHOWNOACTIVATE);
+          case HAlign of
+            1 : Left := r.Left - Width;
+            2 : Left := r.Right;
+          end;
+          case VAlign of
+            1 : Top := r.Top;
+            2 : Top := r.Top + (r.Bottom - r.Top - Height) div 2;
+            3 : Top := r.Bottom - Height;
           end;
         end;
-        { --- Near text caret --- }
-        1: begin
-          p.X := 0;
-          p.Y := 0;
-          if Windows.ClientToScreen(gti.hwndCaret,p) then begin
-            if not(Visible) then
-              ShowWindow(Handle, SW_SHOWNOACTIVATE);
-            case HAlign of
-              1 : Left := p.X + gti.rcCaret.Left - Width;
-              2 : Left := p.X + gti.rcCaret.Right;
-            end;
-            case VAlign of
-              1 : Top := p.Y + gti.rcCaret.Top - Height;
-              2 : Top := p.Y + gti.rcCaret.Top + (gti.rcCaret.Bottom - gti.rcCaret.Top - Height) div 2;
-              3 : Top := p.Y + gti.rcCaret.Bottom;
-            end;
+      end;
+      { --- Near text caret --- }
+      1: begin
+        p.X := 0;
+        p.Y := 0;
+        if Windows.ClientToScreen(gti.hwndCaret,p) then begin
+          if not(Visible) then
+            ShowWindow(Handle, SW_SHOWNOACTIVATE);
+          case HAlign of
+            1 : Left := p.X + gti.rcCaret.Left - Width;
+            2 : Left := p.X + gti.rcCaret.Right;
+          end;
+          case VAlign of
+            1 : Top := p.Y + gti.rcCaret.Top - Height;
+            2 : Top := p.Y + gti.rcCaret.Top + (gti.rcCaret.Bottom - gti.rcCaret.Top - Height) div 2;
+            3 : Top := p.Y + gti.rcCaret.Bottom;
           end;
         end;
-      end else
-        Hide;
-    end else
-      Hide;
+      end;
+    end;
+  end else
+    Hide;
 end;
 
 procedure TfrIndicator.FormCreate(Sender: TObject);
@@ -189,13 +188,11 @@ begin
   TrayIcon.Hint := app_name+' '+app_version;
   // Loading configuration
   ConfigFile := TIniFile.Create(ExtractFilePath(application.ExeName)+'flean.ini');
-  // Resizing window
-  Height:=11;
-  Width:=16;
   AlphaBlend := ConfigFile.ReadBool('settings','transparent',true);
   AlphaBlendValue := ConfigFile.ReadInteger('settings','transparency',220);
   HAlign := ConfigFile.ReadInteger('settings','halign',1);
   VAlign := ConfigFile.ReadInteger('settings','valign',1);
+  ShowAlways := ConfigFile.ReadBool('settings','showalways',false);
   IndType := ConfigFile.ReadInteger('settings','type',0);
   LangFile := TIniFile.Create(ExtractFilePath(application.ExeName)+'langs\'+ConfigFile.ReadString('settings','language','us')+'.ini');
   LangLoaded := false;
