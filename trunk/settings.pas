@@ -40,6 +40,7 @@ type
     dlgIconBrowse: TOpenPictureDialog;
     lblLicense: TLabel;
     imgLogo: TImage;
+    cbShowAlways: TCheckBox;
     procedure LoadSettings;
     procedure tbTransparencyChange(Sender: TObject);
     procedure cbTransparencyClick(Sender: TObject);
@@ -58,6 +59,7 @@ type
     procedure LayoutDeleteClick(Sender: TObject);
     procedure btnIconBrowseClick(Sender: TObject);
     procedure cmbLanguageChange(Sender: TObject);
+    procedure cbShowAlwaysClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -83,6 +85,7 @@ begin
   cmbAlignment.ItemIndex := VAlign-1+3*(HAlign-1);
   cmbShow.ItemIndex := IndType;
   lbLayouts.ItemIndex := lbLayouts.Items.Count-1;
+  cbShowAlways.Checked := ShowAlways;
 end;
 
 procedure TfrSettings.tbTransparencyChange(Sender: TObject);
@@ -255,6 +258,12 @@ begin
   ConfigFile.WriteString('settings','language',cmbLanguage.Items.Strings[cmbLanguage.ItemIndex]);
   LoadLanguageApp;
   LoadSettings;
+end;
+
+procedure TfrSettings.cbShowAlwaysClick(Sender: TObject);
+begin
+  ShowAlways := cbShowAlways.Checked;
+  ConfigFile.WriteBool('settings','showalways',ShowAlways);
 end;
 
 end.
