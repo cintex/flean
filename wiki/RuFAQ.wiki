@@ -1,2 +1,5 @@
 #summary Часто задаваемые вопросы по Flean
 #labels Documentation,Featured,Language-Russian
+
+=Я ничего не понимаю, у меня всё по-английски=
+Нажмите правой кнопкой мыши по иконке Flean в трее, выберите пункт "Settings".
