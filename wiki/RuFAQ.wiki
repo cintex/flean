@@ -1,8 +1,2 @@
 #summary Часто задаваемые вопросы по Flean
 #labels Documentation,Featured,Language-Russian
-
-===А у меня знак вопроса вместо флажка===
-Необходимо [http://code.google.com/p/flean/wiki/RuConfig#Добавление_своей_раскладки прописать раскладку в конфиге].
-
-===Во время работы Flean, возникают проблемы с двойным щёлчком в других программах===
-Попробуйте поменять значение параметра `Interval` в [http://code.google.com/p/flean/wiki/RuConfig#Секция_Settings файле конфигурации].
