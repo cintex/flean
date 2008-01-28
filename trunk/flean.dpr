@@ -9,9 +9,9 @@ uses
 
 begin
   Application.Initialize;
+  Application.ShowMainForm := false;
   Application.Title := 'Flean';
   Application.CreateForm(TfrIndicator, frIndicator);
   Application.CreateForm(TfrSettings, frSettings);
-  Application.Run;
-
+  Application.Run;                  
 end.

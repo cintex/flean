@@ -137,7 +137,9 @@ begin
     Height := pic.Picture.Bitmap.Height;
   end;
   GetGUIThreadInfo(oid,gti);
-  if ShowAlways or (gti.flags and GUI_CARETBLINKING<>0) then begin
+  if not((ShowAlways) or (gti.flags and GUI_CARETBLINKING <> 0)) and (gti.hwndActive <> Handle) then
+    ShowWindow(Handle, SW_HIDE)
+  else
     case IndType of
       { --- Near current input --- }
       0: begin
@@ -174,13 +176,10 @@ begin
         end;
       end;
     end;
-  end else
-    Hide;
 end;
 
 procedure TfrIndicator.FormCreate(Sender: TObject);
 begin
-  Hide;
   Caption := app_name;
   Application.Title := Caption;
   frSettings.Caption := Caption;
@@ -235,13 +234,16 @@ begin
 end;
 
 procedure TfrIndicator.FormShow(Sender: TObject);
-var
-  i : byte;
 begin
   if not(LangLoaded) then begin
     LoadLanguageApp;
     LangLoaded := false;
   end;
+end;
+
+initialization
+begin
+  ShowWindow(Application.Handle, SW_HIDE);
 end;
 
 end.
